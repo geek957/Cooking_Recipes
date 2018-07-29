@@ -1,0 +1,21 @@
+{{extend 'layout.html'}}
+<body style="background-image:url(http://suvasam.org/images/degree/science/Food_Technology/Food_Wallpaper.jpg)">
+    <h1 style="color:#00FF00">Profile</h1>
+    <form action="{{=URL('useruploads',args=post.id)}}" style="float: right;">
+    <input type="submit", value="{{=post.first_name}}'s Recipes">
+    </form>
+    <div class="well">
+    <h2 style="color:red">Full Name : {{=post.first_name}} {{=post.last_name}}</h2>
+    </div>
+    <div class="well">
+    <h4 style="color:gold">Born : {{=prettydate(post.Date_of_Birth)}}</h4>
+    </div>
+    <img src="{{=URL('default','download',args=post.Profile_Pic)}}" style="border-radius: 50%;height:400px;width:400px;float:right">
+    <div class="well">
+    <h3 style="color:navy">DOB: {{=post.Date_of_Birth}}</h3>
+    <h3>Email Id : {{=post.email}}</h3>
+    </div>
+    <div class="well">
+    <h3 style="color:blue">Expert in cooking : {{=post.food_varities_you_cooked}}</h3>
+    </div>
+</body>

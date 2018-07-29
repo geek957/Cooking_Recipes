@@ -1,0 +1,167 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+#########################################################################
+## This is a sample controller
+## - index is the default action of any application
+## - user is required for authentication and authorization
+## - download is for downloading files uploaded in the db (does streaming)
+#########################################################################
+@auth.requires_login()
+
+def index():
+    """
+    example action using the internationalization operator T and flash
+    rendered by views/default/index.html or views/generic.html
+
+    if you need a simple wiki simply replace the two lines below with:
+    return auth.wiki()
+    """
+    response.flash = T("Ready to Taste")
+    message=T('Welcome to the Food World!!')
+    if not request.vars.page:
+        redirect(URL(vars={'page' : 1}))
+    else :
+        page=int(request.vars.page)
+        start=(page-1)*10
+        end=page*10
+        posts=db(db.Reciepe_post).select(orderby=~db.Reciepe_post.created_on,limitby=(start,end))
+
+    return locals()
+@auth.requires_login()
+def Details():
+    post = db.Reciepe_post(request.args(0,cast=int))
+    return locals()
+
+def user():
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    http://..../[app]/default/user/bulk_register
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
+    """
+    return dict(form=auth())
+
+def edit_post():
+    id=request.args(0,cast=int)
+    form=SQLFORM(db.Reciepe_post, id).process(next='Details/[id]')
+    return locals()
+
+@cache.action()
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request, db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()
+@auth.requires_login()
+
+def upload_your_recipie():
+    db.Reciepe_post.Name.default=auth.user.first_name
+    db.Reciepe_post.Name.writable=False
+    db.Reciepe_post.Name.readable=False
+    db.Reciepe_post.iden.default=auth.user.id
+    db.Reciepe_post.iden.writable=False
+    db.Reciepe_post.iden.readable=False
+    form=SQLFORM(db.Reciepe_post).process()
+    return locals()
+@auth.requires_login()
+
+def My_Recipies():
+    rows=db(db.Reciepe_post.iden==auth.user.id).select()
+    if not request.vars.page:
+        redirect(URL(vars={'page' : 1}))
+    else :
+        page=int(request.vars.page)
+        start=(page-1)*10
+        end=page*10
+        posts=db(db.Reciepe_post.iden==auth.user.id).select(orderby=~db.Reciepe_post.created_on,limitby=(start,end))
+    return locals()
+def test():
+    query=((db.Reciepe_post.iden==auth.user.id))
+    rows=SQLFORM.grid(query=query)
+    return locals()
+
+
+def posts():
+    if not request.vars.page:
+        redirect(URL(vars={'page' : 1}))
+    else :
+        page=int(request.vars.page)
+        start=(page-1)*10
+        end=page*10
+        posts=db(db.Reciepe_post).select(orderby=~db.Reciepe_post.created_on,limitby=(start,end))
+        return dict(posts=posts)
+
+def likes():
+    vars = request.post_vars
+    if vars and auth.user:
+        id = vars.id
+        direction = +1 if vars.direction == 'up' else -1
+        post = db.Reciepe_post(id)
+        if post:
+            vote = db.vote(post=id,created_by=auth.user.id)
+            if not vote:
+                if direction==1 :
+                    post.update_record(votes=post.votes+direction)
+                    db.vote.insert(post=id,score=direction)
+                else:
+                    pass
+            elif vote.score!=direction:
+                post.update_record(votes=post.votes+direction)
+                vote.update_record(score=direction)
+            else:
+                pass
+    """
+    if vars:
+        id=vars.id
+        direction=+1 if vars.direction=='up' else -1
+        post=db.Reciepe_post(id)
+        if post:
+            post.update_record(votes=post.votes+direction)
+    """
+    return str(post.votes)
+
+def submit():
+    form=FORM(LABEL("File(s):"), INPUT(_name='up_files',_type='file',_multiple=True,requires=IS_UPLOAD_FILENAME(extension='jpg|png|jpeg')),INPUT(_type='submit'))
+
+    if form.accepts(request.vars, formname="form"):
+        response.flash = 'form accepted'
+        files = request.vars['up_files']
+        if not isinstance(files, list):
+            files = [files]
+        for f in files:
+            up_file = db.uploads.up_file.store(f, f.filename)
+            i = db.uploads.insert(notes=request.vars.notes, 
+up_file=up_file, filename=f.filename)
+            db.commit()
+    elif form.errors:
+        response.flash = 'form has errors'
+    else:
+        response.flash = 'please fill the form'
+    return dict(form=form)
+
+@auth.requires_membership("admin")
+def admini():
+    dict(message=T('Welcome Admin!!'))
+    posts=SQLFORM.smartgrid(db.auth_user, linked_tables=['Reciepe_post'])
+    return locals()

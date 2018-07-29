@@ -1,0 +1,17 @@
+{{extend 'layout.html'}}
+<body>
+    <h1 style="color:navy">Click on Users name to view thier Profile</h1>
+    <div class="well">
+        {{for row in posts:}}
+        <h2><a href="{{=URL('userprofile',args=row.id)}}">{{=row.first_name}}</a></h2>
+        <img src="{{=URL('default','download',args=row.Profile_Pic)}}" style="border-radius: 50%;height:200px;width:250px;float:center"
+             </div>
+        {{pass}}
+</body>
+
+{{if page is not 1:}}
+    <a href={{=URL(vars={'page':int(request.vars.page)-1})}} style="float: left;"><button><img src="http://findicons.com/files/icons/77/icandy_junior_toolbar/128/back_2.png" alt="previous" style="width:40px;height:35px"/></button> </a>
+{{pass}}
+{{if(r!=page):}}
+    <a href={{=URL(vars={'page':int(request.vars.page)+1})}} style="float: right;"><button><img src="http://findicons.com/files/icons/77/icandy_junior_toolbar/128/forward_2.png" alt="previous" style="width:40px;height:35px"/></button></a>
+{{pass}}

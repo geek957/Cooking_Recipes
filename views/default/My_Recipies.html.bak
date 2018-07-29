@@ -1,0 +1,33 @@
+{{extend 'layout.html'}}
+<header >
+   <img src="http://hdwallpapershoot.com/wp-content/uploads/2015/05/Food-Recipes-HD-Wallpapers-4.jpg" alt="" style="width:100%;height:400px;"/>
+    <h1>Recipies Uploaded By You!</h1>
+</header>
+<body style="background-image: url(http://footage.framepool.com/shotimg/739442345-breakfast-meal-milk-bowl-object-pouring-out.jpg);">
+
+<form action="{{=URL('test')}}" style="float: right;">
+    <input style="color:red;"type="submit", value=" Click here to Edit Your Recipies">
+</form>
+    
+<h2 style="color:red;">My_Recipies</h2>
+<table class="table">
+    <tr>
+        <bold>
+        <th style="color:blue;">Name of food item</th>
+        <th style="color:aqua;">Description</th>
+        <th style="color:green;">uploaded/lastmodified on:</th>
+        <th style="color: 	#C71585">Image</th>
+        </bold>
+    </tr>
+    {{for row in posts:}}
+        <tr>
+            <td><FONT SIZE=6><h2><a href="{{=URL('Details',args=row.id)}}">{{=row.Title}}</a></h2></FONT></td>
+            <td><FONT SIZE=4><b><p style="color:#B22222">{{=row.Description}}</p></b></FONT></td>
+            <td><FONT SIZE=4><strong><i style="color: 	#4B0082">{{=prettydate(row.modified_on)}}</i></strong></FONT></td>
+            <td><img src="{{=URL('default','download',args=row.Image)}}" style="border-radius: 50%;height:200px;width:250px;"/></td>
+        </tr>
+    {{pass}}
+    </table>
+<a href={{=URL(vars={'page':int(request.vars.page)-1})}} style="float: left;"><button><img src="http://findicons.com/files/icons/77/icandy_junior_toolbar/128/back_2.png" alt="previous" style="width:40px;height:35px"/></button> </a>
+<a href={{=URL(vars={'page':int(request.vars.page)+1})}} style="float: right;"><button><img src="http://findicons.com/files/icons/77/icandy_junior_toolbar/128/forward_2.png" alt="previous" style="width:40px;height:35px"/></button></a>
+</body>

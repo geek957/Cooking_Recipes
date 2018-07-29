@@ -1,0 +1,99 @@
+{{extend 'layout.html'}}
+<div style="background-color:#E5E4E2;">
+<head><center><h1 style="color:gold;text-shadow: 2px 2px 4px #000000;">{{=post.Title}}</h1></center></head>
+<table style="float:right;">
+    <tr><td><i>BY: <b>{{=post.Name}}</b></i></td></tr>
+    <tr><td><i>Uploaded on : <b>{{=post.created_on}}</b></i></td></tr>
+    <tr><td><i>Recently modified on : <b>{{=prettydate(post.modified_on)}}</b></i></td></tr>
+</table>
+<table style="align:center;">
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+</table>
+<table style="align:center; border-collapse: separate;
+  border-spacing: 50px 0;">
+    <tr><th><i><FONT COLOR=#C88141 SIZE=6>Serves : {{=post.Serves}}</FONT></i></th></tr>
+</table>
+<table>
+    <tr><td><i> . </i></td></tr>
+</table>
+<table style="float:right;">
+    <tr data-id="{{=post.id}}"><td><button data-direction="down">Unlike</button></td><td colspan="3"><strong>Number Of Likes:</strong><span class="votes">{{=post.votes}}</span></td><td><button data-direction="up">Like</button></td></ tr>
+</table>
+{{pass}}
+<table style=" border-collapse: separate;
+  border-spacing: 150px 0;">
+    <tr><td><i><FONT COLOR=#151B8D SIZE=4>Shortly   :  </FONT>  {{=post.Description}}</i></td></tr>
+</table>
+<table>
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+    <tr><td><i> . </i></td></tr>
+</table>
+<table style="align:center; border-collapse: separate;
+  border-spacing: 500px 0;border-style: solid;
+    border-color: #FFF5EE #E5E4E2">
+        <tr style="color:navy">
+            <th><FONT SIZE=4>Prep Time</FONT></th>
+            <th><FONT SIZE=4>Cook Time</FONT></th>
+    </tr>
+    <tr>
+        <td><FONT SIZE=3>{{=post.Prep_time}}</FONT></td>
+        <td><FONT SIZE=3>{{=post.Cook_time}}</FONT></td>
+    </tr>
+</table>
+<table style=" border-collapse: separate;
+  border-spacing: 50px 0; float: left">
+    <tr>
+        <th><FONT SIZE=5>Ingredients</FONT></th>
+    </tr>
+    <tr>
+        <td><FONT SIZE=4>{{=MARKMIN(post.Ingredients)}}</FONT></td>
+    </tr>
+</table>
+<table style=" border-collapse: separate;
+  border-spacing: 50px 0; float: right">
+    <tr>
+        <td><img src="{{=URL('default','download',args=post.Image)}}" style="width:300px;height:400px;"/></td>
+    </tr>
+</table>
+<table style="align:center; border-collapse: separate;
+  border-spacing: 100px 0;">
+    <tr>
+        <th><FONT SIZE=5>Method</FONT></th>
+    </tr>
+    <tr>
+        <td>{{=MARKMIN(post.Instructions)}}</td>
+    </tr>
+</table>
+<table style="align:center; border-collapse: separate;
+  border-spacing: 50px 0;">
+    <tr>
+        <th><FONT SIZE=5>Notes</FONT></th>
+    </tr>
+    <tr>
+        <td>{{=MARKMIN(post.Notes)}}</td>
+    </tr>
+</table>
+    {{if post.created_by==auth.user_id or auth.has_membership(5,auth.user_id):}}
+    {{=A('Edit this post',_class="btn btn-info",_href=URL('edit_post',args=post.id))}}
+    {{pass}}
+</div>
+<script>
+function do_ajax_vote(t,direction){
+        var id = jQuery(t).closest('tr').attr('data-id');
+        jQuery.ajax({method:'post',url:'{{=URL('likes')}}',data:{'id':id,'direction':direction},
+                     success: function(data){
+                     jQuery(t).closest('tr').find('.votes').html(data)
+                    }});
+    }
+    
+jQuery(function(){
+        jQuery('[data-direction=up').click(function(){do_ajax_vote(this,'up');});
+        jQuery('[data-direction=down').click(function(){do_ajax_vote(this,'down');});
+    });
+</script>

@@ -1,0 +1,10 @@
+{{extend 'layout.html'}}
+<body>
+    <h1 style="color:navy">Click on Users name to view thier Profile</h1>
+    <div class="well">
+        {{for row in posts:}}
+        <h2><a href="{{=URL('userprofile',args=row.id)}}">{{=row.first_name}}</a></h2>
+        <img src="{{=URL('default','download',args=row.Profile_Pic)}}" style="border-radius: 50%;height:200px;width:250px;float:center"
+             </div>
+        {{pass}}
+</body>

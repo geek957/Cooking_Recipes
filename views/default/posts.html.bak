@@ -1,0 +1,15 @@
+{{extend 'layout.html'}}
+<table>
+    {{for row in posts:}}
+        <tr>
+            <td><h2>{{=row.Title}}</h2></td>
+            <td><p>{{=row.Description}}</p></td>
+            <td><i>Uploaded on: {{=row.created_on}}</i></td>
+               <td>Uploaded By: {{=row.Name}}</td>
+            <td><img src="{{=URL('default','download',args=row.Image)}}" style="width:200px;height:100px;"/></td>
+        </tr>
+    {{pass}}
+</table>
+
+<a href={{=URL(vars={'page':int(request.vars.page)-1})}} style="float: left;"><button>Previous</button> </a>
+<a href={{=URL(vars={'page':int(request.vars.page)+1})}}><button>Next</button></a>

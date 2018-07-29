@@ -1,0 +1,67 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
+{{extend 'layout.html'}}
+{{block header}}
+    <header class="container-fluid background">
+      <div class="jumbotron text-center">
+        {{if response.title:}}
+        <h1>{{=response.title}}
+          <small>{{=response.subtitle or ''}}</small></h1>
+        {{pass}}
+      </div>
+    </header>
+{{end}}
+<body style="background-image: url(https://dailypost.files.wordpress.com/2016/02/photo-1424847651672-bf20a4b0982b.jpeg);">
+{{if 'message' in globals():}}
+<h2 style="color:navy;">{{=message}}</h2>
+{{elif 'content' in globals():}}
+{{=content}}
+{{else:}}
+{{=BEAUTIFY(response._vars)}}
+{{pass}}
+<form action="{{=URL('upload_your_recipie')}}" style="float: right;">
+    <input type="submit", value="Upload your Recipie!!">
+</form>
+<h2 style="color:red">Latest Reciepes</h2>
+<form action="{{=URL('index1')}}">
+    <input type="submit", value="Click to get best upvoted recipes!!">
+</form>
+<h3><FONT SIZE=5>Click on the Titles for detail description</FONT></h3>
+<table class="table">
+    <tr>
+        <th  style="color:blue;">Title</th>
+        <th>Description</th>
+        <th>Dish ki image</th>
+        <th style="color:green;">uploaded on:</th>
+        <th>Uploaded By:</th>
+    </tr>
+    {{for row in posts:}}
+        <tr style="background-color:#FFFFCC">
+            <td><FONT SIZE=6><b><a href="{{=URL('Details',args=row.id)}}"/>{{=row.Title}}</b></FONT></td>
+            <td><img src="{{=URL('default','download',args=row.Image)}}" style="border-radius: 50%;height:200px;width:250px"/></td>
+            <td><b><p style="color:blue;">{{=row.Description}}</p></b></td>
+            <td><FONT SIZE=4><strong><i style="color: 	#4B0082">{{=prettydate(row.created_on)}}</i></strong></FONT></td>
+            <td><FONT SIZE=6><b><a href="{{=URL('userprofile',args=row.iden)}}">{{=row.Name}}</a></b></FONT></td>
+        </tr>
+    {{pass}}
+</table>
+{{if page is not 1:}}
+    <a href={{=URL(vars={'page':int(request.vars.page)-1})}} style="float: left;"><button><img src="http://findicons.com/files/icons/77/icandy_junior_toolbar/128/back_2.png" alt="previous" style="width:40px;height:35px"/></button> </a>
+{{pass}}
+{{if(r!=page):}}
+    <a href={{=URL(vars={'page':int(request.vars.page)+1})}} style="float: right;"><button><img src="http://findicons.com/files/icons/77/icandy_junior_toolbar/128/forward_2.png" alt="previous" style="width:40px;height:35px"/></button></a>
+{{pass}}
+
+{{block right_sidebar}}
+<div class="panel panel-info">
+  <div class="panel-heading"><h3 class="panel-title"><a class="btn-block"
+      href="{{=URL('default','admini')}}">
+      <i class="glyphicon glyphicon-cog"></i>
+      {{=T("admin")}}
+    </a></h3></div>
+  <div class="panel-body">
+    {{=T("should be an admin to use this!!")}}
+  </div>
+</div>
+{{end}}
+
+</body>
